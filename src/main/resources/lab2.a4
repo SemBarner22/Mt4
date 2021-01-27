@@ -1,0 +1,17 @@
+VOID = "void";
+SEMICOLON = ":";
+VARNAME = "[a-z][a-zA-Z]*";
+NAME = "[_][a-zA-Z]*";
+LB = "\\(";
+RB = "\\)";
+POINTERNAME = "[*]+[_][a-zA-Z]*";
+CM = ", ";
+s  /"public int res = 0;"/ ["s.res = res + 1;"] = t f;
+name  /"public int res = 0;"/ ["name.res = res + 1;"] = NAME;
+f  /"public int res = 0;"/ ["f.res = res + 1;"] = name LB mp SEMICOLON;
+mp  /"public int res = 0;"/ ["mp.res = res + 1;"] = RB | p pp RB;
+p  /"public int res = 0;"/ ["p.res = res + 1;"] = VARNAME n;
+t  /"public int res = 0;"/ ["t.res = res + 1;"] = VARNAME | VOID;
+n  /"public int res = 0;"/ ["n.res = res + 1;"] = NAME | POINTERNAME;
+pp  /"public int res = 0;"/ ["pp.res = res + 1;"] = CM name n pp | CM name n | ~;
+

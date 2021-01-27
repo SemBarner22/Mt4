@@ -1,0 +1,13 @@
+NUM = "[0-9]+(\\.[0-9]+)?";
+PS = "\\+";
+MT = "\\*";
+DV = "/";
+MS = "-";
+LB = "\\(";
+RB = "\\)";
+val /"public double res = 0.0; "/ = {"res = Integer.parseInt(NUM.text);"} NUM | {"res = expr.res;"} LB expr RB | {"res = -expr.res;"} MS expr ;
+term /"public double res = 1.0; "/ =  {"res = val.res * mulDiv.res;"} val mulDiv ;
+expr /"public double res = 0.0;"/ = {"res = term.res + plusMinus.res;"} term plusMinus ;
+plusMinus /"public double res = 0.0; "/ = {"res = term.res + plusMinus.res;"} PS term plusMinus | {"res = -term.res + plusMinus.res;"} MS term plusMinus | ~ ;
+mulDiv    /"public double res = 1.0; "/  =  {"res = term.res * mulDiv.res;"} MT term mulDiv
+| {"res = 1 / term.res * mulDiv.res;"}  DV term mulDiv    | ~ ;
