@@ -23,18 +23,18 @@ public class HelperParser {
     }
 
     private String makeNestedContent(MainParser descriptor) {
-        String nestedNodes = descriptor.idents.stream().map(node -> getNodesPrint(descriptor, node)).collect(Collectors.joining("\n"));
-        String nestedLeaves = descriptor.terms.stream().map(node -> getLeavesPrint(descriptor, node)).collect(Collectors.joining("\n"));
+        String nestedNodes = descriptor.idents.stream().map(node -> getIdentPrint(descriptor, node)).collect(Collectors.joining("\n"));
+        String nestedLeaves = descriptor.terms.stream().map(node -> getTermsPrint(descriptor, node)).collect(Collectors.joining("\n"));
         return nestedNodes + "\n" + nestedLeaves + "\n";
     }
 
     private String makeFunctions(MainParser descriptor) {
-        String nodeFunctions = descriptor.idents.stream().map(n -> makeFunctionNode(descriptor, n)).collect(Collectors.joining("\n")) + "\n";
-        String leafFunctions = descriptor.terms.stream().map(leaf -> makeFunctionLeaf(descriptor, leaf)).collect(Collectors.joining("\n")) + "\n";
+        String nodeFunctions = descriptor.idents.stream().map(n -> makeFunctionIdent(descriptor, n)).collect(Collectors.joining("\n")) + "\n";
+        String leafFunctions = descriptor.terms.stream().map(leaf -> makeFunctionTerm(descriptor, leaf)).collect(Collectors.joining("\n")) + "\n";
         return nodeFunctions + "\n" + leafFunctions;
     }
 
-    private String makeFunctionLeaf(MainParser descriptor, MainParser.Term leaf) {
+    private String makeFunctionTerm(MainParser descriptor, MainParser.Term leaf) {
         String funTemplate = """
                     public %sContext parse%s() {
                         %sContext result =  new %sContext();
@@ -46,7 +46,7 @@ public class HelperParser {
         return String.format(funTemplate, name, name, name, name);
     }
 
-    private String makeFunctionNode(MainParser descriptor, MainParser.Identifier node) {
+    private String makeFunctionIdent(MainParser descriptor, MainParser.Identifier node) {
         String funTemplate = """
                     public %sContext parse%s() {
                         %s
@@ -164,7 +164,7 @@ public class HelperParser {
             }
             """;
 
-    public String getNodesPrint(MainParser descriptor, MainParser.Identifier node) {
+    public String getIdentPrint(MainParser descriptor, MainParser.Identifier node) {
         String template = """
                     public static class %sContext {
                         
@@ -224,7 +224,7 @@ public class HelperParser {
         Optional<MainParser.Identifier> child = descriptor.idents.stream().filter(node -> node.name.equals(name)).findFirst();
         if (child.isPresent()) {
             MainParser.Identifier childIdentifier = child.get();
-            return childIdentifier.naslCode.replace("this", name);
+            return childIdentifier.parVal.replace("this", name);
         } else {
             return "";
         }
@@ -238,7 +238,7 @@ public class HelperParser {
         }).collect(Collectors.joining());
     }
 
-    public String getLeavesPrint(MainParser descriptor, MainParser.Term terms) {
+    public String getTermsPrint(MainParser descriptor, MainParser.Term terms) {
         String template = """
                     public static class %sContext {
                     

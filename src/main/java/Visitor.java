@@ -47,10 +47,9 @@ public class Visitor {
                 }
             }
         }
-        Predicate<String> isNode = (data) -> mainParser.idents.stream().anyMatch(d -> d.name.equals(data));
+        Predicate<String> isIdent = (data) -> mainParser.idents.stream().anyMatch(d -> d.name.equals(data));
         Predicate<String> isterms1 = (data) -> mainParser.terms.stream().anyMatch(d -> d.name.equals(data)) || data.equals("");
 
-//        follow.get("expr").add("$");
         mainParser.idents.forEach(node -> follow.put(node.name, new HashSet<>()));
 
         boolean changed1 = true;
@@ -61,7 +60,7 @@ public class Visitor {
                 for (int i = 0; i < ruleA.right.size(); i++) {
                     String bName = ruleA.right.get(i);
 //                    String bName = null;
-                    if (isNode.test(bName)) {
+                    if (isIdent.test(bName)) {
                         Set<String> bSet = follow.get(bName);
                         if (i < ruleA.right.size() - 1) {
 //                            String gammaName = null;

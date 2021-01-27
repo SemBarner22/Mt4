@@ -37,7 +37,6 @@ public class MainParser {
 
         public Set<String> first = new HashSet<>();
 
-
         public Set<String> follow = new HashSet<>();
 
         public final String initVariables;
@@ -46,26 +45,26 @@ public class MainParser {
 
         public final List<String> rulesCode;
 
-        public final String naslCode;
+        public final String parVal;
 
         public final Map<String, Integer> fieldCounter;
 
-        public final Map<String, Map<String, Integer>> rulesFiledCounter;
+        public final Map<String, Map<String, Integer>> rulesFieldCounter;
 
-        public Identifier(String name, String initVariables, List<Rule> rules, List<String> rulesCode, String naslCode) {
+        public Identifier(String name, String initVariables, List<Rule> rules, List<String> rulesCode, String parVal) {
             this.name = name;
             this.initVariables = initVariables;
             this.rules = rules;
             this.rulesCode = rulesCode;
-            this.naslCode = naslCode;
+            this.parVal = parVal;
             fieldCounter = new HashMap<>();
-            rulesFiledCounter = new HashMap<>();
+            rulesFieldCounter = new HashMap<>();
             for (Rule rule : rules) {
                 var tempMap = new HashMap<String, Integer>();
                 for (String ruleName : rule.right) {
                     tempMap.merge(ruleName, 1, Integer::sum);
                 }
-                rulesFiledCounter.put(rule.left, tempMap);
+                rulesFieldCounter.put(rule.left, tempMap);
                 for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
                     fieldCounter.merge(entry.getKey(), entry.getValue(), Math::max);
                 }
@@ -112,19 +111,19 @@ public class MainParser {
                 import java.util.*;
                 import java.util.regex.Matcher;
                 import java.util.regex.Pattern;
-                               \s
+                              
                 public class Lexer {
-                               \s
+                              
                     private String data;
-                               \s
+                          
                     private final Map<Pattern, Terms> map;
-                               \s
+                             
                     public Lexer(String data) {
                         this.data = data.replaceAll("[ \\n\\t]", "");
                         map = new LinkedHashMap<>();
                         %s
                     }
-                               \s
+                               
                     public List<Tokens> parseAll() {
                         List<Tokens> tokens = new ArrayList<>();
                         while (true) {
@@ -135,12 +134,12 @@ public class MainParser {
                             }
                         }
                     }
-                               \s
+                            
                     private Tokens getTokens() {
                         if (data.isEmpty()) {
                             return new Tokens(Terms.END);
                         }
-                               \s
+                             
                         for (Map.Entry<Pattern, Terms> entry : map.entrySet()) {
                             Pattern pat = entry.getKey();
                             Terms terms = entry.getValue();
@@ -155,14 +154,14 @@ public class MainParser {
                                 }
                                 return new Tokens(terms, result);
                             }
-                               \s
+                              
                         }
-                               \s
+                             
                         return new Tokens(Terms.END);
                     }
-                               \s
+                               
                 }
-                               \s
+                             
                 """;
         String termsEnum = terms.stream().map(terms -> "map.put(Pattern.compile(\"(" + terms.regex + ").*\"), Terms." + terms.name + ");\n").collect(Collectors.joining());
         createCodeFile("Lexer", String.format(preTemplate, termsEnum));
